@@ -179,7 +179,7 @@ def main():
                         version='gluster-stats {0}'.format(__version__))
     args = parser.parse_args()
 
-    stats = GlusterStats(args.sudo)
+    stats = GlusterStats(use_sudo=args.sudo)
     print(json.dumps(stats.get_stats(), indent=4, sort_keys=True))
 
 if __name__ == '__main__':
