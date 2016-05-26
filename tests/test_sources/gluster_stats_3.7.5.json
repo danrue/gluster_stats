@@ -1,0 +1,37 @@
+{
+    "commands": [
+        {
+            "command": "gluster --version",
+            "output": "glusterfs 3.7.5 built on Feb  7 2016 11:32:40\nRepository revision: git://git.gluster.com/glusterfs.git\nCopyright (c) 2006-2011 Gluster Inc. <http://www.gluster.com>\nGlusterFS comes with ABSOLUTELY NO WARRANTY.\nYou may redistribute copies of GlusterFS under the terms of the GNU General Public License.\n"
+        },
+        {
+            "command": "gluster peer status",
+            "output": "Number of Peers: 2\n\nHostname: glcomu01n2.us-east-1.spsdev.in\nUuid: a00c6071-21ed-4b67-8586-bdac3cb8e4d5\nState: Peer in Cluster (Connected)\n\nHostname: glcomu01n3.us-east-1.spsdev.in\nUuid: c6549b0b-3c8d-48a3-9592-d0127253d10d\nState: Peer in Cluster (Connected)\n"
+        },
+        {
+            "command": "gluster volume list",
+            "output": "u01gluster\n"
+        },
+        {
+            "command": "gluster volume heal u01gluster info",
+            "output": "Number of entries: 0\nNumber of entries: 0\nNumber of entries: 0"
+        },
+        {
+            "command": "gluster volume heal u01gluster info split-brain",
+            "output": "Number of entries in split-brain: 0\nNumber of entries in split-brain: 0\nNumber of entries in split-brain: 0"
+        },
+        {
+            "command": "gluster volume status u01gluster detail",
+            "output": "Status of volume: u01gluster\n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n1.us-east-1.spsdev.in:/export/glusterlv_brick1/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 15514               \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg_brick1-gluster_lv\nMount Options        : rw,seclabel,noatime,nouuid,attr2,inode64,logbsize=128k,sunit=256,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 767.6GB             \nTotal Disk Space     : 767.6GB             \nInode Count          : 161060416           \nFree Inodes          : 161060390           \n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n2.us-east-1.spsdev.in:/export/glusterlv_brick1/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 12641               \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg_brick1-gluster_lv\nMount Options        : rw,seclabel,noatime,nouuid,attr2,inode64,logbsize=128k,sunit=256,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 767.6GB             \nTotal Disk Space     : 767.6GB             \nInode Count          : 161060416           \nFree Inodes          : 161060390           \n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n3.us-east-1.spsdev.in:/export/glusterlv_brick1/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 12536               \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg_brick1-gluster_lv\nMount Options        : rw,seclabel,noatime,nouuid,attr2,inode64,logbsize=128k,sunit=256,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 767.6GB             \nTotal Disk Space     : 767.6GB             \nInode Count          : 161060416           \nFree Inodes          : 161060390           \n \n"
+        },
+        {
+            "command": "pidof glusterd",
+            "output": "14044\n"
+        },
+        {
+            "command": "pidof glusterfsd",
+            "output": "15514\n"
+        }
+    ],
+    "gluster_version": "3.7.5"
+}

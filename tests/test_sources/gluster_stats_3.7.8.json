@@ -1,0 +1,37 @@
+{
+    "commands": [
+        {
+            "command": "gluster --version", 
+            "output": "glusterfs 3.7.8 built on Feb 14 2016 05:43:24\nRepository revision: git://git.gluster.com/glusterfs.git\nCopyright (c) 2006-2011 Gluster Inc. <http://www.gluster.com>\nGlusterFS comes with ABSOLUTELY NO WARRANTY.\nYou may redistribute copies of GlusterFS under the terms of the GNU General Public License.\n"
+        }, 
+        {
+            "command": "gluster peer status", 
+            "output": "Number of Peers: 2\n\nHostname: glcom02.p01.ppd\nUuid: b0ea4335-351a-4034-b1d0-faa16107ba7d\nState: Peer in Cluster (Connected)\n\nHostname: glcom03.p01.ppd\nUuid: 658065d8-4f5c-41e8-8fa6-cdcf6ed72920\nState: Peer in Cluster (Connected)\n"
+        }, 
+        {
+            "command": "gluster volume list", 
+            "output": "preprodcomms\n"
+        }, 
+        {
+            "command": "gluster volume heal preprodcomms info", 
+            "output": "Number of entries: 352\nNumber of entries: 17\nNumber of entries: 486"
+        }, 
+        {
+            "command": "gluster volume heal preprodcomms info split-brain", 
+            "output": "Number of entries in split-brain: 0\nNumber of entries in split-brain: 0\nNumber of entries in split-brain: 0"
+        }, 
+        {
+            "command": "gluster volume status preprodcomms detail", 
+            "output": "Status of volume: preprodcomms\n------------------------------------------------------------------------------\nBrick                : Brick glcom01.p01.ppd:/export/glusterlv/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 3989                \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg-gluster_lv\nMount Options        : rw,noatime,nouuid,attr2,inode64,logbsize=256k,sunit=512,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 914.7GB             \nTotal Disk Space     : 991.5GB             \nInode Count          : 208035840           \nFree Inodes          : 206325202           \n------------------------------------------------------------------------------\nBrick                : Brick glcom02.p01.ppd:/export/glusterlv/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 3855                \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg-gluster_lv\nMount Options        : rw,noatime,nouuid,attr2,inode64,logbsize=256k,sunit=512,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 916.6GB             \nTotal Disk Space     : 991.5GB             \nInode Count          : 208035840           \nFree Inodes          : 206325528           \n------------------------------------------------------------------------------\nBrick                : Brick glcom03.p01.ppd:/export/glusterlv/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 3865                \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg-gluster_lv\nMount Options        : rw,noatime,nouuid,attr2,inode64,logbsize=256k,sunit=512,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 918.1GB             \nTotal Disk Space     : 991.5GB             \nInode Count          : 208035840           \nFree Inodes          : 206325083           \n \n"
+        }, 
+        {
+            "command": "pidof glusterd", 
+            "output": "3675\n"
+        }, 
+        {
+            "command": "pidof glusterfsd", 
+            "output": "3989\n"
+        }
+    ], 
+    "gluster_version": "3.7.8"
+}
