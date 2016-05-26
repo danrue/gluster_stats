@@ -14,7 +14,7 @@ with open('HISTORY.rst') as history_file:
 
 setup(
     name='gluster-stats',
-    version='0.0.4',
+    version='0.0.5',
     description=('Display gluster stats'),
     long_description=readme + '\n\n' + history,
     author="Dan Rue",
