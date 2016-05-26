@@ -16,10 +16,11 @@ class TestCommandNotFound(Exception):
 class GlusterStats(object):
     """ Collect stats related to gluster from localhost """
 
-    def __init__(self, test_file=False):
+    def __init__(self, use_sudo=False, test_file=False):
         self.test_commands = []
         if test_file:
             self.test_commands = self._load_test_file(test_file)
+        self.use_sudo = False
 
         self.gluster_version = self.get_gluster_version()
         self.volumes = self.get_volumes()
@@ -28,7 +29,7 @@ class GlusterStats(object):
         return self._execute("gluster --version").split()[1]
 
     def get_volumes(self):
-        return self._execute("gluster volume list").strip().split()
+        return self._execute("gluster volume list", req_sudo=True).strip().split()
 
     def get_glusterd(self):
         return self._execute("pidof glusterd").strip().split()
@@ -37,7 +38,7 @@ class GlusterStats(object):
         return self._execute("pidof glusterfsd").strip().split()
 
     def get_number_peers(self):
-        output = self._execute("gluster peer status").strip()
+        output = self._execute("gluster peer status", req_sudo=True).strip()
         return output.count("Peer in Cluster (Connected)")
 
     def get_unhealed_stats(self):
@@ -45,7 +46,7 @@ class GlusterStats(object):
         for volume in self.volumes:
             entries = 0
             all_entries = self._execute(
-                "gluster volume heal {0} info".format(volume))
+                "gluster volume heal {0} info".format(volume), req_sudo=True)
             for entry in re.findall(r'Number of entries: (\d+)',
                                     all_entries, re.MULTILINE):
                 entries += int(entry)
@@ -58,7 +59,7 @@ class GlusterStats(object):
             entries = 0
             all_entries = self._execute(
                 "gluster volume heal {0} info split-brain".format(
-                    volume))
+                    volume), req_sudo=True)
             for entry in re.findall(r'Number of entries in split-brain: (\d+)',
                                     all_entries, re.MULTILINE):
                 entries += int(entry)
@@ -124,7 +125,7 @@ class GlusterStats(object):
         for volume in self.volumes:
             all_entries = self._execute(
                 "gluster volume status {0} detail".format(
-                    volume))
+                    volume), req_sudo=True)
             stats[volume] = self._parse_brick_entries(all_entries)
         return stats
 
@@ -153,13 +154,15 @@ class GlusterStats(object):
         with open(test_file) as f:
             return json.load(f)
 
-    def _execute(self, cmd):
+    def _execute(self, cmd, req_sudo=False):
         if self.test_commands:
             for command in self.test_commands['commands']:
                 if command['command'] == cmd:
                     return command['output']
             raise TestCommandNotFound(
                 "Mock command reponse not found for command '{0}'".format(cmd))
+        if self.use_sudo and req_sudo:
+            cmd = "sudo {0}".format(cmd)
         handle = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE)
         (stdout, stderr) = handle.communicate()
@@ -168,12 +171,17 @@ class GlusterStats(object):
 def main():
     parser = argparse.ArgumentParser(
         description='Collect stats related to gluster')
+    parser.add_argument('--sudo',
+                        help="Run gluster commands with sudo (requires NOPASSWD)",
+                        dest=use_sudo,
+                        default=False,
+                        action='store_true')
     parser.add_argument('--version',
                         action='version',
                         version='gluster-stats {0}'.format(__version__))
     args = parser.parse_args()
 
-    stats = GlusterStats()
+    stats = GlusterStats(use_sudo)
     print(json.dumps(stats.get_stats(), indent=4, sort_keys=True))
 
 if __name__ == '__main__':
