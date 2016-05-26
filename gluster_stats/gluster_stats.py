@@ -37,7 +37,8 @@ class GlusterStats(object):
         return self._execute("pidof glusterfsd").strip().split()
 
     def get_number_peers(self):
-        return self._execute("gluster peer status").strip().split()[1]
+        output = self._execute("gluster peer status").strip()
+        return output.count("Peer in Cluster (Connected)")
 
     def get_unhealed_stats(self):
         stats = {}
@@ -141,7 +142,7 @@ class GlusterStats(object):
         out['volumes'] = len(self.volumes)
         out['glusterd'] = len(self.glusterd)
         out['glusterfsd'] = len(self.glusterfsd)
-        out['peers'] = len(self.peers)
+        out['peers'] = self.peers
         out['unhealed_entries'] = self.unhealed_entries
         out['split_brain_entries'] = self.split_brain_entries
         out['split_brain_entries'] = self.split_brain_entries
