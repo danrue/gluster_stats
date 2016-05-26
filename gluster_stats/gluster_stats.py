@@ -173,15 +173,13 @@ def main():
         description='Collect stats related to gluster')
     parser.add_argument('--sudo',
                         help="Run gluster commands with sudo (requires NOPASSWD)",
-                        dest=use_sudo,
-                        default=False,
                         action='store_true')
     parser.add_argument('--version',
                         action='version',
                         version='gluster-stats {0}'.format(__version__))
     args = parser.parse_args()
 
-    stats = GlusterStats(args.use_sudo)
+    stats = GlusterStats(args.sudo)
     print(json.dumps(stats.get_stats(), indent=4, sort_keys=True))
 
 if __name__ == '__main__':
