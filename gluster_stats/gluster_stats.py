@@ -20,7 +20,7 @@ class GlusterStats(object):
         self.test_commands = []
         if test_file:
             self.test_commands = self._load_test_file(test_file)
-        self.use_sudo = False
+        self.use_sudo = use_sudo
 
         self.gluster_version = self.get_gluster_version()
         self.volumes = self.get_volumes()
