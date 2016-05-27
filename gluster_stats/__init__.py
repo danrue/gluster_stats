@@ -2,4 +2,4 @@
 
 __author__ = 'Dan Rue'
 __email__ = 'drue@therub.org'
-__version__ = '0.0.9'
+__version__ = '0.0.10'
