@@ -3,6 +3,7 @@ import argparse
 import json
 import re
 import subprocess
+import sys
 
 from builtins import object, str
 from __init__ import __version__
@@ -166,7 +167,11 @@ class GlusterStats(object):
         handle = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE)
         (stdout, stderr) = handle.communicate()
-        return stdout+stderr
+        if handle.returncode > 0:
+            error = "ERROR: command '{0}' failed with:\n\n{1}".format(cmd, stderr)
+            print(error, file=sys.stderr)
+            sys.exit(handle.returncode)
+        return stdout
 
 def main():
     parser = argparse.ArgumentParser(
