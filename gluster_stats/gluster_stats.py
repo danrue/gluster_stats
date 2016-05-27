@@ -4,6 +4,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 
 from builtins import object, str
 from __init__ import __version__
@@ -115,9 +116,9 @@ class GlusterStats(object):
                 entries[brick_index]['disk_total'] = self._dehumanize_size(
                     fields[1].strip())
             elif fields[0].strip() == "Inode Count":
-                entries[brick_index]['inode_total'] = fields[1].strip()
+                entries[brick_index]['inode_total'] = int(fields[1].strip())
             elif fields[0].strip() == "Free Inodes":
-                entries[brick_index]['inode_free'] = fields[1].strip()
+                entries[brick_index]['inode_free'] = int(fields[1].strip())
             continue
         return entries
 
@@ -141,7 +142,8 @@ class GlusterStats(object):
 
     def _format_stats(self):
         out = {}
-        out['volumes'] = len(self.volumes)
+        out['volume_count'] = len(self.volumes)
+        out['volumes'] = self.volumes
         out['glusterd'] = len(self.glusterd)
         out['glusterfsd'] = len(self.glusterfsd)
         out['peers'] = self.peers
@@ -149,6 +151,9 @@ class GlusterStats(object):
         out['split_brain_entries'] = self.split_brain_entries
         out['split_brain_entries'] = self.split_brain_entries
         out['brick_stats'] = self.brick_stats
+        out['gluster_version'] = self.gluster_version
+        out['gluster_stats_version'] = __version__
+        out['generated_timestamp'] = int(time.time())
         return out
 
     def _load_test_file(self, test_file):
