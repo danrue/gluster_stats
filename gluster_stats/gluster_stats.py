@@ -122,10 +122,10 @@ class GlusterStats(object):
             continue
         for i, entry in enumerate(entries):
             entries[i]["disk_used"] = entry['disk_total'] - entry['disk_free']
-            entries[i]["disk_usage_percent"] = format(
+            entries[i]["disk_used_percent"] = format(
                 float(entry['disk_used'])/float(entry['disk_total']), ".2f")
             entries[i]["inode_used"] = entry['inode_total'] - entry['inode_free']
-            entries[i]["inode_usage_percent"] = format(
+            entries[i]["inode_used_percent"] = format(
                 float(entry['inode_used'])/float(entry['inode_total']), ".2f")
 
         return entries
