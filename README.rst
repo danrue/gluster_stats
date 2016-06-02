@@ -8,6 +8,12 @@ Gluster Statistics
 .. image:: https://img.shields.io/travis/danrue/gluster_stats.svg
         :target: https://travis-ci.org/danrue/gluster_stats
 
+
+.. image:: https://img.shields.io/badge/license-BSD-blue.svg
+        :target: LICENSE
+
+.. image:: https://img.shields.io/badge/python-2.6%20%7C%202.7%20%7C%203.3%20%7C%203.4%20%7C%203.5-green.svg
+
 gluster-stats is a command-line utility that generates health-related gluster
 statistics in json, for use in monitoring gluster.
 
