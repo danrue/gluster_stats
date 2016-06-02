@@ -72,7 +72,7 @@ class GlusterStats(object):
         """ Convert strings such as '918.8GB' to bytes. """
         if "TB" in byte_string:
             return int(float(byte_string[:-2])*2**40)
-        if "GB" in byte_string:
+        elif "GB" in byte_string:
             return int(float(byte_string[:-2])*2**30)
         elif "MB" in byte_string:
             return int(float(byte_string[:-2])*2**20)
@@ -120,6 +120,12 @@ class GlusterStats(object):
             elif fields[0].strip() == "Free Inodes":
                 entries[brick_index]['inode_free'] = int(fields[1].strip())
             continue
+        for i,entry in enumerate(entries):
+            entries[i]["disk_used"] = entry['disk_total'] - entry['disk_free']
+            entries[i]["disk_usage_percent"] = format(float(entry['disk_used'])/float(entry['disk_total']), ".2f")
+            entries[i]["inode_used"] = entry['inode_total'] - entry['inode_free']
+            entries[i]["inode_usage_percent"] = format(float(entry['inode_used'])/float(entry['inode_total']), ".2f")
+
         return entries
 
     def get_brick_stats(self):
