@@ -120,11 +120,13 @@ class GlusterStats(object):
             elif fields[0].strip() == "Free Inodes":
                 entries[brick_index]['inode_free'] = int(fields[1].strip())
             continue
-        for i,entry in enumerate(entries):
+        for i, entry in enumerate(entries):
             entries[i]["disk_used"] = entry['disk_total'] - entry['disk_free']
-            entries[i]["disk_usage_percent"] = format(float(entry['disk_used'])/float(entry['disk_total']), ".2f")
+            entries[i]["disk_usage_percent"] = format(
+                float(entry['disk_used'])/float(entry['disk_total']), ".2f")
             entries[i]["inode_used"] = entry['inode_total'] - entry['inode_free']
-            entries[i]["inode_usage_percent"] = format(float(entry['inode_used'])/float(entry['inode_total']), ".2f")
+            entries[i]["inode_usage_percent"] = format(
+                float(entry['inode_used'])/float(entry['inode_total']), ".2f")
 
         return entries
 
