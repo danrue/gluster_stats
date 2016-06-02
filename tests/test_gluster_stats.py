@@ -32,22 +32,34 @@ class TestGlusterStats(object):
                {
                 "disk_free": 982151646412, 
                 "disk_total": 1064615018496, 
+                "disk_usage_percent": "0.08", 
+                "disk_used": 82463372084, 
                 "inode_free": 206325202, 
                 "inode_total": 208035840, 
+                "inode_usage_percent": "0.01", 
+                "inode_used": 1710638, 
                 "online": 1
                }, 
                {
                 "disk_free": 984191755878, 
                 "disk_total": 1064615018496, 
+                "disk_usage_percent": "0.08", 
+                "disk_used": 80423262618, 
                 "inode_free": 206325528, 
                 "inode_total": 208035840, 
+                "inode_usage_percent": "0.01", 
+                "inode_used": 1710312, 
                 "online": 1
                }, 
                {
                 "disk_free": 985802368614, 
                 "disk_total": 1064615018496, 
+                "disk_usage_percent": "0.07", 
+                "disk_used": 78812649882, 
                 "inode_free": 206325083, 
                 "inode_total": 208035840, 
+                "inode_usage_percent": "0.01", 
+                "inode_used": 1710757, 
                 "online": 1
                }
               ]
@@ -82,22 +94,34 @@ class TestGlusterStats(object):
                {
                 "disk_free": 824204224102, 
                 "disk_total": 824204224102, 
+                "disk_usage_percent": "0.00", 
+                "disk_used": 0, 
                 "inode_free": 161060390, 
                 "inode_total": 161060416, 
+                "inode_usage_percent": "0.00", 
+                "inode_used": 26, 
                 "online": 1
                }, 
                {
                 "disk_free": 824204224102, 
                 "disk_total": 824204224102, 
+                "disk_usage_percent": "0.00", 
+                "disk_used": 0, 
                 "inode_free": 161060390, 
                 "inode_total": 161060416, 
+                "inode_usage_percent": "0.00", 
+                "inode_used": 26, 
                 "online": 1
                }, 
                {
                 "disk_free": 824204224102, 
                 "disk_total": 824204224102, 
+                "disk_usage_percent": "0.00", 
+                "disk_used": 0, 
                 "inode_free": 161060390, 
                 "inode_total": 161060416, 
+                "inode_usage_percent": "0.00", 
+                "inode_used": 26, 
                 "online": 1
                }
               ]
