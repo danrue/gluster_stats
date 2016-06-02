@@ -36,47 +36,57 @@ itself.
 Example output::
 
     {
-        "brick_stats": {
-            "u01gluster": [
-                {
-                    "disk_free": 824204224102, 
-                    "disk_total": 824204224102, 
-                    "inode_free": 161060390, 
-                    "inode_total": 161060416, 
-                    "online": 1
-                }, 
-                {
-                    "disk_free": 824204224102, 
-                    "disk_total": 824204224102, 
-                    "inode_free": 161060390, 
-                    "inode_total": 161060416, 
-                    "online": 1
-                }, 
-                {
-                    "disk_free": 824204224102, 
-                    "disk_total": 824204224102, 
-                    "inode_free": 161060390, 
-                    "inode_total": 161060416, 
-                    "online": 1
-                }
-            ]
-        }, 
-        "generated_timestamp": 1464377824, 
-        "gluster_stats_version": "0.0.9", 
-        "gluster_version": "3.7.5", 
-        "glusterd": 1, 
-        "glusterfsd": 1, 
-        "peers": 2, 
-        "split_brain_entries": {
-            "u01gluster": 0
-        }, 
-        "unhealed_entries": {
-            "u01gluster": 0
-        }, 
-        "volume_count": 1, 
-        "volumes": [
-            "u01gluster"
-        ]
+     "brick_stats": {
+      "preprodcomms": [
+       {
+        "disk_free": 982151646412, 
+        "disk_total": 1064615018496, 
+        "disk_usage_percent": "0.08", 
+        "disk_used": 82463372084, 
+        "inode_free": 206325202, 
+        "inode_total": 208035840, 
+        "inode_usage_percent": "0.01", 
+        "inode_used": 1710638, 
+        "online": 1
+       }, 
+       {
+        "disk_free": 984191755878, 
+        "disk_total": 1064615018496, 
+        "disk_usage_percent": "0.08", 
+        "disk_used": 80423262618, 
+        "inode_free": 206325528, 
+        "inode_total": 208035840, 
+        "inode_usage_percent": "0.01", 
+        "inode_used": 1710312, 
+        "online": 1
+       }, 
+       {
+        "disk_free": 985802368614, 
+        "disk_total": 1064615018496, 
+        "disk_usage_percent": "0.07", 
+        "disk_used": 78812649882, 
+        "inode_free": 206325083, 
+        "inode_total": 208035840, 
+        "inode_usage_percent": "0.01", 
+        "inode_used": 1710757, 
+        "online": 1
+       }
+      ]
+     }, 
+     "gluster_version": "3.7.8", 
+     "glusterd": 1, 
+     "glusterfsd": 1, 
+     "peers": 2, 
+     "split_brain_entries": {
+      "preprodcomms": 0
+     }, 
+     "unhealed_entries": {
+      "preprodcomms": 855
+     }, 
+     "volume_count": 1, 
+     "volumes": [
+      "preprodcomms"
+     ]
     }
 
 Commands
