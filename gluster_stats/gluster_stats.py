@@ -96,39 +96,41 @@ class GlusterStats(object):
             Inode Count          : 208035840
             Free Inodes          : 206341448
         """
-        entries = []
-        brick_index = -1
+        bricks = {}
+        current_brick = ""
         for line in all_entries.split('\n'):
-            fields = line.split(':')
+            fields = line.split(' : ')
             if fields[0].strip() == "Brick":
-                brick_index += 1
-                entries.insert(brick_index, {})
+                current_brick = fields[1].split(' ')[-1]
+                bricks[current_brick] = {}
+
             elif fields[0].strip() == "Online":
                 online = fields[1].strip()
                 if online == 'Y':
-                    entries[brick_index]['online'] = 1
+                    bricks[current_brick]['online'] = 1
                 else:
-                    entries[brick_index]['online'] = 0
+                    bricks[current_brick]['online'] = 0
             elif fields[0].strip() == "Disk Space Free":
-                entries[brick_index]['disk_free'] = self._dehumanize_size(
+                bricks[current_brick]['disk_free'] = self._dehumanize_size(
                     fields[1].strip())
             elif fields[0].strip() == "Total Disk Space":
-                entries[brick_index]['disk_total'] = self._dehumanize_size(
+                bricks[current_brick]['disk_total'] = self._dehumanize_size(
                     fields[1].strip())
             elif fields[0].strip() == "Inode Count":
-                entries[brick_index]['inode_total'] = int(fields[1].strip())
+                bricks[current_brick]['inode_total'] = int(fields[1].strip())
             elif fields[0].strip() == "Free Inodes":
-                entries[brick_index]['inode_free'] = int(fields[1].strip())
+                bricks[current_brick]['inode_free'] = int(fields[1].strip())
             continue
-        for i, entry in enumerate(entries):
-            entries[i]["disk_used"] = entry['disk_total'] - entry['disk_free']
-            entries[i]["disk_used_percent"] = format(
-                float(entry['disk_used'])/float(entry['disk_total']), ".2f")
-            entries[i]["inode_used"] = entry['inode_total'] - entry['inode_free']
-            entries[i]["inode_used_percent"] = format(
-                float(entry['inode_used'])/float(entry['inode_total']), ".2f")
 
-        return entries
+        for brick in bricks:
+            bricks[brick]["disk_used"] = bricks[brick]['disk_total'] - bricks[brick]['disk_free']
+            bricks[brick]["disk_used_percent"] = format(
+                float(bricks[brick]['disk_used'])/float(bricks[brick]['disk_total']), ".2f")
+            bricks[brick]["inode_used"] = bricks[brick]['inode_total'] - bricks[brick]['inode_free']
+            bricks[brick]["inode_used_percent"] = format(
+                float(bricks[brick]['inode_used'])/float(bricks[brick]['inode_total']), ".2f")
+
+        return bricks
 
     def get_brick_stats(self):
         stats = {}

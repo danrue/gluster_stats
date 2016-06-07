@@ -118,6 +118,14 @@ Tests are run locally with generated mock response files. Run
 ``gluster-stats-generate`` to generate new mock response file. The file will be
 saved at gluster_stats_<gluster_version>.json.
 
+Versioning
+----------
+
+gluster-stats uses semantic versioning. Backward incompatible changes to the
+json output (such as changing something from a list to a dict) require a major
+version bump. New values in a dictionary will come with a minor version bump.
+Bug fixes and patches will use a patch bump.
+
 Todo
 ----
 
