@@ -33,33 +33,33 @@ class TestGlusterStats(object):
                 "disk_free": 982151646412, 
                 "disk_total": 1064615018496, 
                 "disk_used": 82463372084, 
-                "disk_used_percent": "0.08", 
+                "disk_used_percent": "7.75", 
                 "inode_free": 206325202, 
                 "inode_total": 208035840, 
                 "inode_used": 1710638, 
-                "inode_used_percent": "0.01", 
+                "inode_used_percent": "0.82", 
                 "online": 1
                }, 
                "glcom02.p01.ppd:/export/glusterlv/brick1": {
                 "disk_free": 984191755878, 
                 "disk_total": 1064615018496, 
                 "disk_used": 80423262618, 
-                "disk_used_percent": "0.08", 
+                "disk_used_percent": "7.55", 
                 "inode_free": 206325528, 
                 "inode_total": 208035840, 
                 "inode_used": 1710312, 
-                "inode_used_percent": "0.01", 
+                "inode_used_percent": "0.82", 
                 "online": 1
                }, 
                "glcom03.p01.ppd:/export/glusterlv/brick1": {
                 "disk_free": 985802368614, 
                 "disk_total": 1064615018496, 
                 "disk_used": 78812649882, 
-                "disk_used_percent": "0.07", 
+                "disk_used_percent": "7.40", 
                 "inode_free": 206325083, 
                 "inode_total": 208035840, 
                 "inode_used": 1710757, 
-                "inode_used_percent": "0.01", 
+                "inode_used_percent": "0.82", 
                 "online": 1
                }
               }
