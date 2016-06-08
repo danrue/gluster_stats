@@ -125,10 +125,10 @@ class GlusterStats(object):
         for brick in bricks:
             bricks[brick]["disk_used"] = bricks[brick]['disk_total'] - bricks[brick]['disk_free']
             bricks[brick]["disk_used_percent"] = format(
-                float(bricks[brick]['disk_used'])/float(bricks[brick]['disk_total']), ".2f")
+                float(100*bricks[brick]['disk_used'])/float(bricks[brick]['disk_total']), ".2f")
             bricks[brick]["inode_used"] = bricks[brick]['inode_total'] - bricks[brick]['inode_free']
             bricks[brick]["inode_used_percent"] = format(
-                float(bricks[brick]['inode_used'])/float(bricks[brick]['inode_total']), ".2f")
+                float(100*bricks[brick]['inode_used'])/float(bricks[brick]['inode_total']), ".2f")
 
         return bricks
 
