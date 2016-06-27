@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 import argparse
 import easyprocess
@@ -19,29 +20,30 @@ class TestCommandNotFound(Exception):
 class GlusterStats(object):
     """ Collect stats related to gluster from localhost """
 
-    def __init__(self, use_sudo=False, test_file=False):
+    def __init__(self, use_sudo=False, timeout=None, test_file=False):
         self.test_commands = []
         if test_file:
             self.test_commands = self._load_test_file(test_file)
         self.use_sudo = use_sudo
+        self.timeout = timeout
 
         self.gluster_version = self.get_gluster_version()
         self.volumes = self.get_volumes()
 
     def get_gluster_version(self):
-        return self._execute("gluster --version").split()[1]
+        return self._execute("gluster --version").stdout.split()[1]
 
     def get_volumes(self):
-        return self._execute("gluster volume list", req_sudo=True).strip().split()
+        return self._execute("gluster volume list", req_sudo=True).stdout.strip().split()
 
     def get_glusterd(self):
-        return self._execute("pidof glusterd").strip().split()
+        return self._execute("pidof glusterd").stdout.strip().split()
 
     def get_glusterfsd(self):
-        return self._execute("pidof glusterfsd").strip().split()
+        return self._execute("pidof glusterfsd").stdout.strip().split()
 
     def get_number_peers(self):
-        output = self._execute("gluster peer status", req_sudo=True).strip()
+        output = self._execute("gluster peer status", req_sudo=True).stdout.strip()
         return output.count("Peer in Cluster (Connected)")
 
     def get_unhealed_stats(self):
@@ -50,8 +52,11 @@ class GlusterStats(object):
             entries = 0
             all_entries = self._execute(
                 "gluster volume heal {0} info".format(volume), req_sudo=True)
+            if all_entries.timeout_happened:
+                stats[volume] = None
+                continue
             for entry in re.findall(r'Number of entries: (\d+)',
-                                    all_entries, re.MULTILINE):
+                                    all_entries.stdout, re.MULTILINE):
                 entries += int(entry)
             stats[volume] = entries
         return stats
@@ -63,8 +68,11 @@ class GlusterStats(object):
             all_entries = self._execute(
                 "gluster volume heal {0} info split-brain".format(
                     volume), req_sudo=True)
+            if all_entries.timeout_happened:
+                stats[volume] = None
+                continue
             for entry in re.findall(r'Number of entries in split-brain: (\d+)',
-                                    all_entries, re.MULTILINE):
+                                    all_entries.stdout, re.MULTILINE):
                 entries += int(entry)
             stats[volume] = entries
         return stats
@@ -139,7 +147,7 @@ class GlusterStats(object):
             all_entries = self._execute(
                 "gluster volume status {0} detail".format(
                     volume), req_sudo=True)
-            stats[volume] = self._parse_brick_entries(all_entries)
+            stats[volume] = self._parse_brick_entries(all_entries.stdout)
         return stats
 
     def get_stats(self):
@@ -181,14 +189,14 @@ class GlusterStats(object):
         if self.use_sudo and req_sudo:
             cmd = "sudo {0}".format(cmd)
 
-        p = easyprocess.EasyProcess(cmd.split()).call()
+        p = easyprocess.EasyProcess(cmd.split()).call(timeout=self.timeout)
         retcode = p.return_code
         if p.return_code > 0:
             error = ("ERROR: command '{0}' failed with:\n\n{1}\n\n{2}".
                 format(cmd, p.stdout, p.stderr))
             print(error, file=sys.stderr)
             sys.exit(p.return_code)
-        return p.stdout
+        return p
 
 def main():
     parser = argparse.ArgumentParser(
@@ -199,9 +207,15 @@ def main():
     parser.add_argument('--version',
                         action='version',
                         version='gluster-stats {0}'.format(__version__))
+    parser.add_argument('--timeout',
+                        default=300,
+                        help='Timeout per command in seconds. Defaults to 300.')
     args = parser.parse_args()
 
-    stats = GlusterStats(use_sudo=args.sudo)
+    timeout = None
+    if args.timeout:
+        timeout = int(args.timeout)
+    stats = GlusterStats(use_sudo=args.sudo, timeout=timeout)
     print(json.dumps(stats.get_stats(), indent=4, sort_keys=True))
 
 if __name__ == '__main__':
