@@ -26,7 +26,7 @@ setup(
     package_dir={'gluster_stats':
                  'gluster_stats'},
     include_package_data=True,
-    install_requires=['future'],
+    install_requires=['easyprocess', 'future'],
     license="BSD",
     keywords='gluster monitoring',
     classifiers=[

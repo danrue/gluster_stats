@@ -1,5 +1,6 @@
 from __future__ import print_function
 import argparse
+import easyprocess
 import json
 import re
 import subprocess
@@ -179,14 +180,15 @@ class GlusterStats(object):
                 "Mock command reponse not found for command '{0}'".format(cmd))
         if self.use_sudo and req_sudo:
             cmd = "sudo {0}".format(cmd)
-        handle = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
-        (stdout, stderr) = handle.communicate()
-        if handle.returncode > 0:
-            error = "ERROR: command '{0}' failed with:\n\n{1}".format(cmd, stderr)
+
+        p = easyprocess.EasyProcess(cmd.split()).call()
+        retcode = p.return_code
+        if p.return_code > 0:
+            error = ("ERROR: command '{0}' failed with:\n\n{1}\n\n{2}".
+                format(cmd, p.stdout, p.stderr))
             print(error, file=sys.stderr)
-            sys.exit(handle.returncode)
-        return stdout
+            sys.exit(p.return_code)
+        return p.stdout
 
 def main():
     parser = argparse.ArgumentParser(
