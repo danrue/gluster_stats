@@ -55,7 +55,7 @@ class GlusterStats(object):
     def get_unhealed_stats(self):
         stats = {}
         for volume in self.volumes:
-            entries = 0
+            max_entry = 0
             all_entries = self._execute(
                 "gluster volume heal {0} info".format(volume))
             if all_entries['timeout_happened']:
@@ -63,14 +63,14 @@ class GlusterStats(object):
                 continue
             for entry in re.findall(r'Number of entries: (\d+)',
                                     all_entries['stdout'], re.MULTILINE):
-                entries += int(entry)
-            stats[volume] = entries
+                max_entry = max(int(entry), max_entry)
+            stats[volume] = max_entry
         return stats
 
     def get_split_brain_stats(self):
         stats = {}
         for volume in self.volumes:
-            entries = 0
+            max_entry = 0
             all_entries = self._execute(
                 "gluster volume heal {0} info split-brain".format(
                     volume))
@@ -79,8 +79,8 @@ class GlusterStats(object):
                 continue
             for entry in re.findall(r'Number of entries in split-brain: (\d+)',
                                     all_entries['stdout'], re.MULTILINE):
-                entries += int(entry)
-            stats[volume] = entries
+                max_entry = max(int(entry), max_entry)
+            stats[volume] = max_entry
         return stats
 
     def _dehumanize_size(self, byte_string):

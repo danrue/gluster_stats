@@ -83,7 +83,7 @@
     }, 
     "unhealed_entries": {
         "gluster_shared_storage": 0, 
-        "prod_u01": 0
+        "prod_u01": 155
     }, 
     "volume_count": 2, 
     "volumes": [
