@@ -1,0 +1,79 @@
+[
+    {
+        "command": "gluster --version", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "glusterfs 3.7.5 built on Feb  7 2016 11:32:40\nRepository revision: git://git.gluster.com/glusterfs.git\nCopyright (c) 2006-2011 Gluster Inc. <http://www.gluster.com>\nGlusterFS comes with ABSOLUTELY NO WARRANTY.\nYou may redistribute copies of GlusterFS under the terms of the GNU General Public License.", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "gluster volume list", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "gluster_shared_storage\nprod_u01", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "pidof glusterd", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "1411", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "pidof glusterfsd", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "1631 1626", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "gluster peer status", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "Number of Peers: 2\n\nHostname: glcomu01n2.p01.pro\nUuid: ec67f9fd-34d0-4199-949f-7485cfd5e317\nState: Peer in Cluster (Connected)\n\nHostname: glcomu01n3.p01.pro\nUuid: 74265188-edee-4cae-be50-6702694cac06\nState: Peer in Cluster (Connected)", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "gluster volume heal gluster_shared_storage info", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "Number of entries: 0\nNumber of entries: 0\nNumber of entries: 0", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "gluster volume heal prod_u01 info", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "Number of entries: 0\nNumber of entries: 0\nNumber of entries: 0", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "gluster volume heal gluster_shared_storage info split-brain", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "Number of entries in split-brain: 0\nNumber of entries in split-brain: 0\nNumber of entries in split-brain: 0", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "gluster volume heal prod_u01 info split-brain", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "Number of entries in split-brain: 0\nNumber of entries in split-brain: 0\nNumber of entries in split-brain: 0", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "gluster volume status gluster_shared_storage detail", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "Status of volume: gluster_shared_storage\n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n2.p01.pro:/var/lib/glusterd/ss_brick\nTCP Port             : 49153               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 4271                \nFile System          : xfs                 \nDevice               : /dev/mapper/shared_storage_vg-shared_storage_lv\nMount Options        : rw,seclabel,noatime,nouuid,attr2,inode64,noquota\nInode Size           : 256                 \nDisk Space Free      : 16.0GB              \nTotal Disk Space     : 16.0GB              \nInode Count          : 16773120            \nFree Inodes          : 16772888            \n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n3.p01.pro:/var/lib/glusterd/ss_brick\nTCP Port             : 49153               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 1610                \nFile System          : xfs                 \nDevice               : /dev/mapper/shared_storage_vg-shared_storage_lv\nMount Options        : rw,seclabel,relatime,attr2,inode64,noquota\nInode Size           : 256                 \nDisk Space Free      : 16.0GB              \nTotal Disk Space     : 16.0GB              \nInode Count          : 16773120            \nFree Inodes          : 16772935            \n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n1.p01.pro:/var/lib/glusterd/ss_brick\nTCP Port             : 49153               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 1626                \nFile System          : xfs                 \nDevice               : /dev/mapper/shared_storage_vg-shared_storage_lv\nMount Options        : rw,seclabel,noatime,nouuid,attr2,inode64,noquota\nInode Size           : 256                 \nDisk Space Free      : 16.0GB              \nTotal Disk Space     : 16.0GB              \nInode Count          : 16773120            \nFree Inodes          : 16772967            \n ", 
+        "timeout_happened": false
+    }, 
+    {
+        "command": "gluster volume status prod_u01 detail", 
+        "return_code": 0, 
+        "stderr": "", 
+        "stdout": "Status of volume: prod_u01\n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n1.p01.pro:/export/glusterlv/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 1631                \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg-gluster_lv\nMount Options        : rw,seclabel,noatime,nouuid,attr2,inode64,logbsize=256k,sunit=512,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 1.2TB               \nTotal Disk Space     : 2.0TB               \nInode Count          : 422784192           \nFree Inodes          : 332394317           \n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n2.p01.pro:/export/glusterlv/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 4195                \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg-gluster_lv\nMount Options        : rw,seclabel,noatime,nouuid,attr2,inode64,logbsize=256k,sunit=512,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 1.2TB               \nTotal Disk Space     : 2.0TB               \nInode Count          : 422784192           \nFree Inodes          : 332375427           \n------------------------------------------------------------------------------\nBrick                : Brick glcomu01n3.p01.pro:/export/glusterlv/brick1\nTCP Port             : 49152               \nRDMA Port            : 0                   \nOnline               : Y                   \nPid                  : 1614                \nFile System          : xfs                 \nDevice               : /dev/mapper/gluster_vg-gluster_lv\nMount Options        : rw,seclabel,noatime,nouuid,attr2,inode64,logbsize=256k,sunit=512,swidth=512,noquota\nInode Size           : 512                 \nDisk Space Free      : 1.2TB               \nTotal Disk Space     : 2.0TB               \nInode Count          : 422784192           \nFree Inodes          : 332393641           \n ", 
+        "timeout_happened": false
+    }
+]

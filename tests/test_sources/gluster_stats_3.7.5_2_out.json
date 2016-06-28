@@ -1,0 +1,93 @@
+{
+    "brick_stats": {
+        "gluster_shared_storage": {
+            "glcomu01n1.p01.pro:/var/lib/glusterd/ss_brick": {
+                "disk_free": 17179869184, 
+                "disk_total": 17179869184, 
+                "disk_used": 0, 
+                "disk_used_percent": "0.00", 
+                "inode_free": 16772967, 
+                "inode_total": 16773120, 
+                "inode_used": 153, 
+                "inode_used_percent": "0.00", 
+                "online": 1
+            }, 
+            "glcomu01n2.p01.pro:/var/lib/glusterd/ss_brick": {
+                "disk_free": 17179869184, 
+                "disk_total": 17179869184, 
+                "disk_used": 0, 
+                "disk_used_percent": "0.00", 
+                "inode_free": 16772888, 
+                "inode_total": 16773120, 
+                "inode_used": 232, 
+                "inode_used_percent": "0.00", 
+                "online": 1
+            }, 
+            "glcomu01n3.p01.pro:/var/lib/glusterd/ss_brick": {
+                "disk_free": 17179869184, 
+                "disk_total": 17179869184, 
+                "disk_used": 0, 
+                "disk_used_percent": "0.00", 
+                "inode_free": 16772935, 
+                "inode_total": 16773120, 
+                "inode_used": 185, 
+                "inode_used_percent": "0.00", 
+                "online": 1
+            }
+        }, 
+        "prod_u01": {
+            "glcomu01n1.p01.pro:/export/glusterlv/brick1": {
+                "disk_free": 1319413953331, 
+                "disk_total": 2199023255552, 
+                "disk_used": 879609302221, 
+                "disk_used_percent": "40.00", 
+                "inode_free": 332394317, 
+                "inode_total": 422784192, 
+                "inode_used": 90389875, 
+                "inode_used_percent": "21.38", 
+                "online": 1
+            }, 
+            "glcomu01n2.p01.pro:/export/glusterlv/brick1": {
+                "disk_free": 1319413953331, 
+                "disk_total": 2199023255552, 
+                "disk_used": 879609302221, 
+                "disk_used_percent": "40.00", 
+                "inode_free": 332375427, 
+                "inode_total": 422784192, 
+                "inode_used": 90408765, 
+                "inode_used_percent": "21.38", 
+                "online": 1
+            }, 
+            "glcomu01n3.p01.pro:/export/glusterlv/brick1": {
+                "disk_free": 1319413953331, 
+                "disk_total": 2199023255552, 
+                "disk_used": 879609302221, 
+                "disk_used_percent": "40.00", 
+                "inode_free": 332393641, 
+                "inode_total": 422784192, 
+                "inode_used": 90390551, 
+                "inode_used_percent": "21.38", 
+                "online": 1
+            }
+        }
+    }, 
+    "generated_timestamp": 1467125741, 
+    "gluster_stats_version": "1.1.0", 
+    "gluster_version": "3.7.5", 
+    "glusterd": 1, 
+    "glusterfsd": 2, 
+    "peers": 2, 
+    "split_brain_entries": {
+        "gluster_shared_storage": 0, 
+        "prod_u01": 0
+    }, 
+    "unhealed_entries": {
+        "gluster_shared_storage": 0, 
+        "prod_u01": 0
+    }, 
+    "volume_count": 2, 
+    "volumes": [
+        "gluster_shared_storage", 
+        "prod_u01"
+    ]
+}
