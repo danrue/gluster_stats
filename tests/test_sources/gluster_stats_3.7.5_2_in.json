@@ -45,7 +45,7 @@
         "command": "gluster volume heal prod_u01 info", 
         "return_code": 0, 
         "stderr": "", 
-        "stdout": "Number of entries: 0\nNumber of entries: 0\nNumber of entries: 0", 
+        "stdout": "Number of entries: 133\nNumber of entries: 155\nNumber of entries: 0", 
         "timeout_happened": false
     }, 
     {
