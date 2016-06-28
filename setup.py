@@ -26,7 +26,7 @@ setup(
     package_dir={'gluster_stats':
                  'gluster_stats'},
     include_package_data=True,
-    install_requires=['future'],
+    install_requires=['easyprocess', 'future'],
     license="BSD",
     keywords='gluster monitoring',
     classifiers=[
@@ -48,7 +48,6 @@ setup(
     entry_points={
         'console_scripts': [
             'gluster-stats=gluster_stats.gluster_stats:main',
-            'gluster-stats-generate=gluster_stats.generate_gluster_stats:main',
         ],
     },
 

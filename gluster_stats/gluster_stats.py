@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 import argparse
+import easyprocess
 import json
 import re
 import subprocess
@@ -18,29 +20,34 @@ class TestCommandNotFound(Exception):
 class GlusterStats(object):
     """ Collect stats related to gluster from localhost """
 
-    def __init__(self, use_sudo=False, test_file=False):
+    def __init__(self, use_sudo=False, timeout=None, test_file=False,
+                 record_mode=False):
         self.test_commands = []
         if test_file:
             self.test_commands = self._load_test_file(test_file)
         self.use_sudo = use_sudo
+        self.timeout = timeout
+        self.record_mode=record_mode
+        if self.record_mode:
+            self.responses = []
 
         self.gluster_version = self.get_gluster_version()
         self.volumes = self.get_volumes()
 
     def get_gluster_version(self):
-        return self._execute("gluster --version").split()[1]
+        return self._execute("gluster --version")['stdout'].split()[1]
 
     def get_volumes(self):
-        return self._execute("gluster volume list", req_sudo=True).strip().split()
+        return self._execute("gluster volume list", req_sudo=True)['stdout'].strip().split()
 
     def get_glusterd(self):
-        return self._execute("pidof glusterd").strip().split()
+        return self._execute("pidof glusterd")['stdout'].strip().split()
 
     def get_glusterfsd(self):
-        return self._execute("pidof glusterfsd").strip().split()
+        return self._execute("pidof glusterfsd")['stdout'].strip().split()
 
     def get_number_peers(self):
-        output = self._execute("gluster peer status", req_sudo=True).strip()
+        output = self._execute("gluster peer status", req_sudo=True)['stdout'].strip()
         return output.count("Peer in Cluster (Connected)")
 
     def get_unhealed_stats(self):
@@ -49,8 +56,11 @@ class GlusterStats(object):
             entries = 0
             all_entries = self._execute(
                 "gluster volume heal {0} info".format(volume), req_sudo=True)
+            if all_entries['timeout_happened']:
+                stats[volume] = None
+                continue
             for entry in re.findall(r'Number of entries: (\d+)',
-                                    all_entries, re.MULTILINE):
+                                    all_entries['stdout'], re.MULTILINE):
                 entries += int(entry)
             stats[volume] = entries
         return stats
@@ -62,8 +72,11 @@ class GlusterStats(object):
             all_entries = self._execute(
                 "gluster volume heal {0} info split-brain".format(
                     volume), req_sudo=True)
+            if all_entries['timeout_happened']:
+                stats[volume] = None
+                continue
             for entry in re.findall(r'Number of entries in split-brain: (\d+)',
-                                    all_entries, re.MULTILINE):
+                                    all_entries['stdout'], re.MULTILINE):
                 entries += int(entry)
             stats[volume] = entries
         return stats
@@ -138,7 +151,7 @@ class GlusterStats(object):
             all_entries = self._execute(
                 "gluster volume status {0} detail".format(
                     volume), req_sudo=True)
-            stats[volume] = self._parse_brick_entries(all_entries)
+            stats[volume] = self._parse_brick_entries(all_entries['stdout'])
         return stats
 
     def get_stats(self):
@@ -170,23 +183,54 @@ class GlusterStats(object):
         with open(test_file) as f:
             return json.load(f)
 
+    def _strip_filenames_from_response(self, stdout):
+        # Strip file list as they may be private data
+        safe_output = []
+        for line in stdout.split('\n'):
+            if line.startswith("Number"):
+                safe_output.append(line)
+        return '\n'.join(safe_output)
+
     def _execute(self, cmd, req_sudo=False):
         if self.test_commands:
-            for command in self.test_commands['commands']:
+            for command in self.test_commands:
                 if command['command'] == cmd:
-                    return command['output']
+                    return command
             raise TestCommandNotFound(
                 "Mock command reponse not found for command '{0}'".format(cmd))
+
+        run_cmd = cmd
         if self.use_sudo and req_sudo:
-            cmd = "sudo {0}".format(cmd)
-        handle = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
-        (stdout, stderr) = handle.communicate()
-        if handle.returncode > 0:
-            error = "ERROR: command '{0}' failed with:\n\n{1}".format(cmd, stderr)
+            run_cmd = "sudo {0}".format(cmd)
+        p = easyprocess.EasyProcess(run_cmd.split()).call(timeout=self.timeout)
+        retcode = p.return_code
+        if p.return_code > 0:
+            error = ("ERROR: command '{0}' failed with:\n\n{1}\n\n{2}".
+                format(cmd, p.stdout, p.stderr))
             print(error, file=sys.stderr)
-            sys.exit(handle.returncode)
-        return stdout
+            sys.exit(p.return_code)
+        response = {'command': cmd,
+                    'stdout': p.stdout,
+                    'stderr': p.stderr,
+                    'timeout_happened': p.timeout_happened,
+                    'return_code': p.return_code,
+                   }
+
+        if 'heal' in cmd:
+            response['stdout'] = self._strip_filenames_from_response(p.stdout)
+        if self.record_mode:
+            self.responses.append(response)
+        return response
+
+    def write_record(self):
+        if self.record_mode:
+            with open("gluster_stats_{0}_in.json".
+                      format(self.gluster_version), 'w') as f:
+                f.write(json.dumps(self.responses, indent=4, sort_keys=True))
+            with open("gluster_stats_{0}_out.json".
+                      format(self.gluster_version), 'w') as f:
+                f.write(json.dumps(self._format_stats(), indent=4, sort_keys=True))
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -194,13 +238,25 @@ def main():
     parser.add_argument('--sudo',
                         help="Run gluster commands with sudo (requires NOPASSWD)",
                         action='store_true')
+    parser.add_argument('--record',
+                        help="Record the gluster cli responses in a local response file",
+                        action='store_true')
     parser.add_argument('--version',
                         action='version',
                         version='gluster-stats {0}'.format(__version__))
+    parser.add_argument('--timeout',
+                        default=300,
+                        help='Timeout per command in seconds. Defaults to 300.')
     args = parser.parse_args()
 
-    stats = GlusterStats(use_sudo=args.sudo)
+    timeout = None
+    if args.timeout:
+        timeout = int(args.timeout)
+    stats = GlusterStats(use_sudo=args.sudo, timeout=timeout, 
+                         record_mode=args.record)
     print(json.dumps(stats.get_stats(), indent=4, sort_keys=True))
+    if args.record:
+        stats.write_record()
 
 if __name__ == '__main__':
     main()

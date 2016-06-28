@@ -133,5 +133,3 @@ Todo
   to parse and the parser is probably fragile. This will require new mock test
   files.
 - Additional health checks?
-- generate-gluster-stats is totally unnecessary and should just be a feature
-  of gluster-stats's execute function. What was I thinking?
