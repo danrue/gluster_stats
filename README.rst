@@ -25,16 +25,24 @@ Installation
 Usage
 -----
 
-Return gluster stats in json format.
+Return gluster stats in json format. Requires root privileges.
 
-``sudo gluster-stats``
+Options::
 
-Alternatively, use ``gluster-stats --sudo`` to have gluster-stats call all of
-the gluster commands with sudo, instead of calling gluster-stats root access
-itself.
+    $ gluster-stats --help
+    usage: gluster-stats [-h] [--record] [--version] [--timeout TIMEOUT]
+
+    Collect stats related to gluster
+
+    optional arguments:
+      -h, --help         show this help message and exit
+      --record           Record the gluster cli responses in a local response file
+      --version          show program's version number and exit
+      --timeout TIMEOUT  Timeout per command in seconds. Defaults to 300.
 
 Example output::
 
+    $ sudo gluster-stats
     {
      "brick_stats": {
       "preprodcomms": [
