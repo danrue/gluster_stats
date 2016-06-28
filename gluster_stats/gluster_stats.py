@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import argparse
-import easyprocess
 import json
+import os
 import re
+import shlex
+import signal
 import subprocess
 import sys
 import time
+from threading import Timer
 
 from builtins import object, str
 from __init__ import __version__
@@ -20,12 +23,11 @@ class TestCommandNotFound(Exception):
 class GlusterStats(object):
     """ Collect stats related to gluster from localhost """
 
-    def __init__(self, use_sudo=False, timeout=None, test_file=False,
+    def __init__(self, timeout=None, test_file=False,
                  record_mode=False):
         self.test_commands = []
         if test_file:
             self.test_commands = self._load_test_file(test_file)
-        self.use_sudo = use_sudo
         self.timeout = timeout
         self.record_mode=record_mode
         if self.record_mode:
@@ -38,7 +40,7 @@ class GlusterStats(object):
         return self._execute("gluster --version")['stdout'].split()[1]
 
     def get_volumes(self):
-        return self._execute("gluster volume list", req_sudo=True)['stdout'].strip().split()
+        return self._execute("gluster volume list")['stdout'].strip().split()
 
     def get_glusterd(self):
         return self._execute("pidof glusterd")['stdout'].strip().split()
@@ -47,7 +49,7 @@ class GlusterStats(object):
         return self._execute("pidof glusterfsd")['stdout'].strip().split()
 
     def get_number_peers(self):
-        output = self._execute("gluster peer status", req_sudo=True)['stdout'].strip()
+        output = self._execute("gluster peer status")['stdout'].strip()
         return output.count("Peer in Cluster (Connected)")
 
     def get_unhealed_stats(self):
@@ -55,7 +57,7 @@ class GlusterStats(object):
         for volume in self.volumes:
             entries = 0
             all_entries = self._execute(
-                "gluster volume heal {0} info".format(volume), req_sudo=True)
+                "gluster volume heal {0} info".format(volume))
             if all_entries['timeout_happened']:
                 stats[volume] = None
                 continue
@@ -71,7 +73,7 @@ class GlusterStats(object):
             entries = 0
             all_entries = self._execute(
                 "gluster volume heal {0} info split-brain".format(
-                    volume), req_sudo=True)
+                    volume))
             if all_entries['timeout_happened']:
                 stats[volume] = None
                 continue
@@ -149,8 +151,7 @@ class GlusterStats(object):
         stats = {}
         for volume in self.volumes:
             all_entries = self._execute(
-                "gluster volume status {0} detail".format(
-                    volume), req_sudo=True)
+                "gluster volume status {0} detail".format(volume))
             stats[volume] = self._parse_brick_entries(all_entries['stdout'])
         return stats
 
@@ -191,7 +192,12 @@ class GlusterStats(object):
                 safe_output.append(line)
         return '\n'.join(safe_output)
 
-    def _execute(self, cmd, req_sudo=False):
+    def _kill_process_tree(self, process, timeout_happened):
+        timeout_happened["value"] = True
+        pgid = os.getpgid(process.pid)
+        os.killpg(pgid, signal.SIGTERM)
+
+    def _execute(self, cmd):
         if self.test_commands:
             for command in self.test_commands:
                 if command['command'] == cmd:
@@ -199,26 +205,38 @@ class GlusterStats(object):
             raise TestCommandNotFound(
                 "Mock command reponse not found for command '{0}'".format(cmd))
 
-        run_cmd = cmd
-        if self.use_sudo and req_sudo:
-            run_cmd = "sudo {0}".format(cmd)
-        p = easyprocess.EasyProcess(run_cmd.split()).call(timeout=self.timeout)
-        retcode = p.return_code
-        if p.return_code > 0:
+        # Use preexec_fn to create a process group. In case of timeout,
+        # the whole process group can be killed.
+        p = subprocess.Popen(shlex.split(cmd),
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                preexec_fn=os.setpgrp)
+
+        # Create a timer thread to implement timeouts, calling self._kill_process_tree
+        # in the event of a timeout to kill the process tree.
+        timeout_happened = {"value": False}
+        if self.timeout:
+            timer = Timer(self.timeout, self._kill_process_tree, [p, timeout_happened])
+            timer.start()
+        stdout, stderr = p.communicate()
+        if self.timeout:
+            timer.cancel()
+
+        if p.returncode > 0:
             error = ("ERROR: command '{0}' failed with:\n\n{1}\n\n{2}".
-                format(cmd, p.stdout, p.stderr))
+                format(cmd, stdout, stderr))
             print(error, file=sys.stderr)
-            sys.exit(p.return_code)
+            sys.exit(p.returncode)
         response = {'command': cmd,
-                    'stdout': p.stdout,
-                    'stderr': p.stderr,
-                    'timeout_happened': p.timeout_happened,
-                    'return_code': p.return_code,
+                    'stdout': stdout,
+                    'stderr': stderr,
+                    'timeout_happened': timeout_happened['value'],
+                    'return_code': p.returncode,
                    }
 
-        if 'heal' in cmd:
-            response['stdout'] = self._strip_filenames_from_response(p.stdout)
         if self.record_mode:
+            if 'heal' in cmd:
+                response['stdout'] = self._strip_filenames_from_response(stdout)
             self.responses.append(response)
         return response
 
@@ -235,9 +253,6 @@ class GlusterStats(object):
 def main():
     parser = argparse.ArgumentParser(
         description='Collect stats related to gluster')
-    parser.add_argument('--sudo',
-                        help="Run gluster commands with sudo (requires NOPASSWD)",
-                        action='store_true')
     parser.add_argument('--record',
                         help="Record the gluster cli responses in a local response file",
                         action='store_true')
@@ -252,7 +267,7 @@ def main():
     timeout = None
     if args.timeout:
         timeout = int(args.timeout)
-    stats = GlusterStats(use_sudo=args.sudo, timeout=timeout, 
+    stats = GlusterStats(timeout=timeout,
                          record_mode=args.record)
     print(json.dumps(stats.get_stats(), indent=4, sort_keys=True))
     if args.record:
