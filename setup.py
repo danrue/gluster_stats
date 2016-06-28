@@ -48,7 +48,6 @@ setup(
     entry_points={
         'console_scripts': [
             'gluster-stats=gluster_stats.gluster_stats:main',
-            'gluster-stats-generate=gluster_stats.generate_gluster_stats:main',
         ],
     },
 
