@@ -90,14 +90,19 @@ class GlusterStats(object):
         root = ElementTree.fromstring(all_entries)
         bricks = {}
         try:
-            iterator = root.iter('volume')
+            root_iterator = root.iter('volume')
         except AttributeError:
             # python 2.6 does not have iter
-            iterator = root.getiterator('volume')
-        for v in iterator:
+            root_iterator = root.getiterator('volume')
+        for v in root_iterator:
             volName = v.find('volName').text
             nodeCount = v.find('nodeCount').text
-            for n in v.iter('node'):
+            try:
+                node_iterator = v.iter('node')
+            except AttributeError:
+                # python 2.6 does not have iter
+                node_iterator = v.getiterator('node')
+            for n in node_iterator:
                 hostname = n.find('hostname').text
                 path = n.find('path').text
                 brick = "{0}:{1}".format(hostname, path)
