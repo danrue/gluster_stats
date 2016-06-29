@@ -89,7 +89,12 @@ class GlusterStats(object):
     def _parse_brick_entries_xml(self, all_entries):
         root = ElementTree.fromstring(all_entries)
         bricks = {}
-        for v in root.iter('volume'):
+        try:
+            iterator = root.iter('volume')
+        except AttributeError:
+            # python 2.6 does not have iter
+            iterator = root.getiterator('volume')
+        for v in iterator:
             volName = v.find('volName').text
             nodeCount = v.find('nodeCount').text
             for n in v.iter('node'):
