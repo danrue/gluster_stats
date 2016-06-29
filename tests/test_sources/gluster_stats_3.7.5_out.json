@@ -1,10 +1,10 @@
 {
     "brick_stats": {
-        "u01gluster": {
-            "glcomu01n1.us-east-1.spsdev.in:/export/glusterlv_brick1/brick1": {
-                "disk_free": 824204224102, 
-                "disk_total": 824204224102, 
-                "disk_used": 0, 
+        "u01gluster": [
+            {
+                "disk_free": 824191664128, 
+                "disk_total": 824226873344, 
+                "disk_used": 35209216, 
                 "disk_used_percent": "0.00", 
                 "inode_free": 161060390, 
                 "inode_total": 161060416, 
@@ -12,10 +12,10 @@
                 "inode_used_percent": "0.00", 
                 "online": 1
             }, 
-            "glcomu01n2.us-east-1.spsdev.in:/export/glusterlv_brick1/brick1": {
-                "disk_free": 824204224102, 
-                "disk_total": 824204224102, 
-                "disk_used": 0, 
+            {
+                "disk_free": 824191696896, 
+                "disk_total": 824226873344, 
+                "disk_used": 35176448, 
                 "disk_used_percent": "0.00", 
                 "inode_free": 161060390, 
                 "inode_total": 161060416, 
@@ -23,10 +23,10 @@
                 "inode_used_percent": "0.00", 
                 "online": 1
             }, 
-            "glcomu01n3.us-east-1.spsdev.in:/export/glusterlv_brick1/brick1": {
-                "disk_free": 824204224102, 
-                "disk_total": 824204224102, 
-                "disk_used": 0, 
+            {
+                "disk_free": 824191696896, 
+                "disk_total": 824226873344, 
+                "disk_used": 35176448, 
                 "disk_used_percent": "0.00", 
                 "inode_free": 161060390, 
                 "inode_total": 161060416, 
@@ -34,19 +34,19 @@
                 "inode_used_percent": "0.00", 
                 "online": 1
             }
-        }
+        ]
     }, 
-    "generated_timestamp": 1467123947, 
-    "gluster_stats_version": "1.0.2", 
+    "generated_timestamp": 1467224608, 
+    "gluster_stats_version": "1.2.1", 
     "gluster_version": "3.7.5", 
     "glusterd": 1, 
     "glusterfsd": 1, 
     "peers": 2, 
     "split_brain_entries": {
-        "u01gluster": null
+        "u01gluster": 0
     }, 
     "unhealed_entries": {
-        "u01gluster": null
+        "u01gluster": 500
     }, 
     "volume_count": 1, 
     "volumes": [

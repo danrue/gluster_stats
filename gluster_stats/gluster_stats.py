@@ -10,7 +10,10 @@ import subprocess
 import sys
 import time
 from threading import Timer
-
+try:
+    import xml.etree.cElementTree as ElementTree
+except ImportError:
+    import xml.etree.ElementTree as ElementTree
 from builtins import object, str
 from __init__ import __version__
 
@@ -83,16 +86,32 @@ class GlusterStats(object):
             stats[volume] = max_entry
         return stats
 
-    def _dehumanize_size(self, byte_string):
-        """ Convert strings such as '918.8GB' to bytes. """
-        if "TB" in byte_string:
-            return int(float(byte_string[:-2])*2**40)
-        elif "GB" in byte_string:
-            return int(float(byte_string[:-2])*2**30)
-        elif "MB" in byte_string:
-            return int(float(byte_string[:-2])*2**20)
-        elif "KB" in byte_string:
-            return int(float(byte_string[:-2])*2**10)
+    def _parse_brick_entries_xml(self, all_entries):
+        root = ElementTree.fromstring(all_entries)
+        bricks = {}
+        for v in root.iter('volume'):
+            volName = v.find('volName').text
+            nodeCount = v.find('nodeCount').text
+            for n in v.iter('node'):
+                hostname = n.find('hostname').text
+                path = n.find('path').text
+                brick = "{0}:{1}".format(hostname, path)
+                bricks[brick] = {}
+                bricks[brick]['online'] = int(n.find('status').text)
+                bricks[brick]['disk_free'] = int(n.find('sizeFree').text)
+                bricks[brick]['disk_total'] = int(n.find('sizeTotal').text)
+
+                # Wouldn't this be nice?
+                #bricks[brick]['inode_free'] = n.find('inodeFree').text
+                #bricks[brick]['inode_total'] = n.find('inodeTotal').text
+
+                bricks[brick]["disk_used"] = (bricks[brick]['disk_total'] -
+                                              bricks[brick]['disk_free'])
+                bricks[brick]["disk_used_percent"] = format(
+                    float(100*bricks[brick]['disk_used'])/
+                    float(bricks[brick]['disk_total']), ".2f")
+
+        return bricks
 
     def _parse_brick_entries(self, all_entries):
         """
@@ -118,19 +137,6 @@ class GlusterStats(object):
             if fields[0].strip() == "Brick":
                 current_brick = fields[1].split(' ')[-1]
                 bricks[current_brick] = {}
-
-            elif fields[0].strip() == "Online":
-                online = fields[1].strip()
-                if online == 'Y':
-                    bricks[current_brick]['online'] = 1
-                else:
-                    bricks[current_brick]['online'] = 0
-            elif fields[0].strip() == "Disk Space Free":
-                bricks[current_brick]['disk_free'] = self._dehumanize_size(
-                    fields[1].strip())
-            elif fields[0].strip() == "Total Disk Space":
-                bricks[current_brick]['disk_total'] = self._dehumanize_size(
-                    fields[1].strip())
             elif fields[0].strip() == "Inode Count":
                 bricks[current_brick]['inode_total'] = int(fields[1].strip())
             elif fields[0].strip() == "Free Inodes":
@@ -138,9 +144,6 @@ class GlusterStats(object):
             continue
 
         for brick in bricks:
-            bricks[brick]["disk_used"] = bricks[brick]['disk_total'] - bricks[brick]['disk_free']
-            bricks[brick]["disk_used_percent"] = format(
-                float(100*bricks[brick]['disk_used'])/float(bricks[brick]['disk_total']), ".2f")
             bricks[brick]["inode_used"] = bricks[brick]['inode_total'] - bricks[brick]['inode_free']
             bricks[brick]["inode_used_percent"] = format(
                 float(100*bricks[brick]['inode_used'])/float(bricks[brick]['inode_total']), ".2f")
@@ -148,11 +151,30 @@ class GlusterStats(object):
         return bricks
 
     def get_brick_stats(self):
+        """
+            Call gluster volume status detail twice
+
+            Ideally we only need to call it with --xml. However, --xml does not
+            report inode usage (!?). We can't just call without xml, because
+            disk space is reported in human readable form, and going from 1.4TB
+            to 1.5TB is a 5% jump - far too gross for reporting and trending.
+        """
         stats = {}
         for volume in self.volumes:
             all_entries = self._execute(
                 "gluster volume status {0} detail".format(volume))
-            stats[volume] = self._parse_brick_entries(all_entries['stdout'])
+            stat1 = self._parse_brick_entries(all_entries['stdout'])
+            all_entries = self._execute(
+                "gluster volume status {0} detail --xml".format(volume))
+            stat2 = self._parse_brick_entries_xml(all_entries['stdout'])
+
+            # Merge the two dicts
+            vol_stats = []
+            for k,v in stat1.items():
+                stat = v.copy()
+                stat.update(stat2[k])
+                vol_stats.append(stat)
+            stats[volume] = vol_stats
         return stats
 
     def get_stats(self):
