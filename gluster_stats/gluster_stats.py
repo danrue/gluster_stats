@@ -169,11 +169,11 @@ class GlusterStats(object):
             stat2 = self._parse_brick_entries_xml(all_entries['stdout'])
 
             # Merge the two dicts
-            vol_stats = []
+            vol_stats = {}
             for k,v in stat1.items():
                 stat = v.copy()
                 stat.update(stat2[k])
-                vol_stats.append(stat)
+                vol_stats[k] = stat
             stats[volume] = vol_stats
         return stats
 
